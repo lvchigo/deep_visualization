@@ -69,7 +69,102 @@ def demo_oneimage_mutilabel(net, im_file, output_path, im_name):
 
     # the parameters are a list of [weights, biases]
     filters = net.params['conv1_1'][0].data
-    output_file = os.path.join( output_path, 'conv1_1_kernal.png' )  
+    output_file = os.path.join( output_path, 'conv1_1_feat.png' )  
+    vis_square(filters.transpose(0, 2, 3, 1), output_file)
+
+    feat = net.blobs['conv1_1'].data[0]
+    output_file = os.path.join( output_path, 'conv1_1.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv1_2'].data[0]
+    output_file = os.path.join( output_path, 'conv1_2.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['pool1'].data[0]
+    output_file = os.path.join( output_path, 'pool1.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv2_1'].data[0]
+    output_file = os.path.join( output_path, 'conv2_1.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv2_2'].data[0]
+    output_file = os.path.join( output_path, 'conv2_2.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['pool2'].data[0]
+    output_file = os.path.join( output_path, 'pool2.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv3_1'].data[0]
+    output_file = os.path.join( output_path, 'conv3_1.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv3_2'].data[0]
+    output_file = os.path.join( output_path, 'conv3_2.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv3_3'].data[0]
+    output_file = os.path.join( output_path, 'conv3_3.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['pool3'].data[0]
+    output_file = os.path.join( output_path, 'pool3.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv4_1'].data[0]
+    output_file = os.path.join( output_path, 'conv4_1.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv4_2'].data[0]
+    output_file = os.path.join( output_path, 'conv4_2.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv4_3'].data[0]
+    output_file = os.path.join( output_path, 'conv4_3.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['pool4'].data[0]
+    output_file = os.path.join( output_path, 'pool4.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv5_1'].data[0]
+    output_file = os.path.join( output_path, 'conv5_1.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv5_2'].data[0]
+    output_file = os.path.join( output_path, 'conv5_2.png' )
+    vis_square(feat, output_file)
+
+    feat = net.blobs['conv5_3'].data[0]
+    output_file = os.path.join( output_path, 'conv5_3.png' )
+    vis_square(feat, output_file)
+
+def demo_oneimage_mutilabel_all(net, im_file, output_path, im_name):
+    """Detect object classes in an image using pre-computed object proposals."""
+
+    image = caffe.io.load_image(im_file)
+    transformed_image = transformer.preprocess('data', image)
+    #plt.imshow(image)
+
+    # copy the image data into the memory allocated for the net
+    net.blobs['data'].data[...] = transformed_image
+
+    ### perform classification
+    output = net.forward()
+    output_prob = output['cls_prob'][0]  # the output probability vector for the first image in the batch
+    print 'predicted class is:', output_prob.argmax()
+    
+    labels = np.loadtxt(labels_file, str, delimiter='\t')
+    print 'output label:', labels[output_prob.argmax()]
+
+    # sort top five predictions from softmax output
+    top_inds = output_prob.argsort()[::-1][:5]  # reverse sort and take five largest items
+    print 'probabilities and labels:',zip(output_prob[top_inds], labels[top_inds])
+
+    # the parameters are a list of [weights, biases]
+    filters = net.params['conv1_1'][0].data
+    output_file = os.path.join( output_path, 'conv1_1_feat.png' )  
     vis_square(filters.transpose(0, 2, 3, 1), output_file)
 
     feat = net.blobs['conv1_1'].data[0]
@@ -205,6 +300,7 @@ def demo_oneimage_mutilabel(net, im_file, output_path, im_name):
     output_file = os.path.join( output_path, 'cls_bbox_prob.png' )      
     plt.savefig(output_file)
 
+
 def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='Faster R-CNN demo')
@@ -280,6 +376,7 @@ if __name__ == '__main__':
 
         #add by chigo                    
         demo_oneimage_mutilabel(net, im_file, output_path, im_name)
+        #demo_oneimage_mutilabel_all(net, im_file, output_path, im_name)
 
     print 'All load img:{}!!'.format(nCount)
 

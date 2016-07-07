@@ -68,7 +68,7 @@ def demo_oneimage_mutilabel(net, im_file, output_path, im_name):
 
     # the parameters are a list of [weights, biases]
     filters = net.params['conv1'][0].data
-    output_file = os.path.join( output_path, 'conv1_kernal.png' )  
+    output_file = os.path.join( output_path, 'conv1_feat.png' )  
     vis_square(filters.transpose(0, 2, 3, 1), output_file)
 
     feat = net.blobs['conv1'].data[0]
@@ -86,6 +86,11 @@ def demo_oneimage_mutilabel(net, im_file, output_path, im_name):
     feat = net.blobs['conv2'].data[0]
     output_file = os.path.join( output_path, 'conv2.png' )
     vis_square(feat, output_file)
+
+    # There are 256 filters, each of which has dimension 5 x 5 x 48. We show only the first 48 filters, with each channel shown separately, so that each filter is a row.
+    filters = net.params['conv2'][0].data
+    output_file = os.path.join( output_path, 'conv2_feat.png' )
+    vis_square(filters[:48].reshape(48**2, 5, 5), output_file)
 
     feat = net.blobs['pool2'].data[0]
     output_file = os.path.join( output_path, 'pool2.png' )
